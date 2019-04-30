@@ -1,9 +1,14 @@
 #include <iostream>
+#include "bstreedictionary.h"
+#include "dlinkedlist.h"
+#include "trie.h"
+#include "bstree.h"
+
 
 using namespace std;
 
 int main()
 {
-    cout << "Hello World!" << endl;
-    return 0;
+    BSTree<int> *arbolito= new BSTree<int>();
+
 }
