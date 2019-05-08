@@ -49,7 +49,6 @@ public:
 
     void add(char c){
         TrieNode *child=new TrieNode();
-        increaseCount();
         children.insert(c, child);
     }
 
