@@ -1,55 +1,65 @@
 #ifndef BINNODE_H
 #define BINNODE_H
 #include <iostream>
+#include "kvpair.h"
 using namespace std;
 
-template <typename E>
+template <typename K,typename V>
+
+
 
 class BSTNode
 {
 private:
-    E element;
-    BSTNode<E> *left;
-    BSTNode<E> *right;
+    KVPair<K,V> element;
+    BSTNode<K,V> *left;
+    BSTNode<K,V> *right;
+
 
 public:
-    BSTNode(BSTNode<E>*left=NULL,BSTNode<E>*right=NULL){
+    BSTNode(BSTNode<K,V>*left=NULL,BSTNode<K,V>*right=NULL){
         this->left=left;
         this->right=right;
     }
 
 
-    BSTNode(E element, BSTNode<E>*left=NULL,BSTNode<E>*right=NULL) {
-        this->element=element;
+    BSTNode(K key,V value=NULL, BSTNode<K,V> *left=NULL, BSTNode<K,V> *right=NULL) {
+        this->element=KVPair<K,V>(key,value);
         this->left=left;
         this->right=right;
 
     }
-    ~BSTNode(){
 
-    }
 
-    E getElement(){
+
+
+
+
+//    ~BSTNode(){
+
+//    }
+
+    KVPair<K,V> getElement(){
         return element;
     }
 
-    void setElement(E element){
+    void setElement(KVPair<K,V> element){
         this->element;
     }
 
-    BSTNode<E> *getLeft(){
+    BSTNode<K,V> *getLeft(){
         return left;
         }
 
-    void setLeft(BSTNode<E> *left){
+    void setLeft(BSTNode<K,V> *left){
         this->left = left;
         }
 
-    BSTNode<E> *getRight(){
+    BSTNode<K,V> *getRight(){
         return right;
         }
 
-    void setRight(BSTNode<E> *right){
+    void setRight(BSTNode<K,V> *right){
         this->right = right;
         }
 
@@ -61,16 +71,16 @@ public:
         return(left==NULL?0:1)+(right==NULL?0:1);
         }
 
-    BSTNode<E> *getUniqueChild(){
+    BSTNode<K,V> *getUniqueChild(){
         return left==NULL ? right : left;
         }
 
-    BSTNode<E> * getSuccesor(){
+    BSTNode<K,V> * getSuccesor(){
         return getSuccessorAux(right);
         }
 
 private:
-    BSTNode<E> *getSuccessorAux(BSTNode<E> *pRoot){
+    BSTNode<K,V> *getSuccessorAux(BSTNode<K,V> *pRoot){
         if(pRoot==NULL)return NULL;
         if(pRoot->left==NULL)return pRoot;
         else{
@@ -79,13 +89,13 @@ private:
     }
 
 private:
-    void swap(BSTNode<E>*node1,BSTNode<E>*node2){
-        E temp= node1->getElement();
+    void swap(BSTNode<K,V>*node1,BSTNode<K,V>*node2){
+        KVPair<K,V> temp= node1->getElement();
         node1->setElement(node2->getElement());
         node2->setElement(temp);
     }
 public:
-    bool contains(E element){
+    bool contains(KVPair<K,V> element){
         try {
             find(element);
             return true;

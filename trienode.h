@@ -2,10 +2,12 @@
 #define TRIENODE_H
 #include "list.h"
 #include "bstreedictionary.h"
+#include "dictionary.h"
+#include "kvpair.h"
 
 class TrieNode{
 private:
-    bool isFinal;
+    bool isFinal=false;
     int prefixCount;
 
     BSTreeDictionary<char,TrieNode*> children;
@@ -47,6 +49,7 @@ public:
 
     void add(char c){
         TrieNode *child=new TrieNode();
+        increaseCount();
         children.insert(c, child);
     }
 
@@ -64,9 +67,11 @@ public:
         return children.getKeys();
     }
 
-    List<TrieNode*> getChildrenPointers(){
+    List<TrieNode*> *getChildrenPointers(){
         return children.getValues();
     }
+
+
 };
 
 #endif // TRIENODE_H

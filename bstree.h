@@ -2,40 +2,41 @@
 #define ARBOLBINARIO_H
 #include "bstnode.h"
 #include "dlinkedlist.h"
+#include "list.h"
 
-template<typename E>
+template<typename K,typename V>
 
 class BSTree{
 private:
-   BSTNode<E> *root;
+   BSTNode<K,V> *root;
 
 
 
 public:
    BSTree(){
-       root =NULL;
+       root=NULL;
    }
 
    ~BSTree(){
       clear();
    }
 
-   void insert(E element){
-       root= insertAux(root,element);
+   void insert(K key,V value){
+       root= insertAux(root,key,value);
 
    }
 private:
-   BSTNode<E> *insertAux(BSTNode<E> *pRoot, E element){
+   BSTNode<K,V> *insertAux(BSTNode<K,V> *pRoot, K key,V value){
        if(pRoot==NULL){
-           return BSTNode<E>(element);
+           return new BSTNode<K,V>(key,value);
        }
-
-       if(element<pRoot->getElement()){
-           pRoot->setLeft(insertAux(pRoot->getLeft(),element));
+       int k=(int)key;
+       if(k<(int)pRoot->getElement().getKey()){
+           pRoot->setLeft(insertAux(pRoot->getLeft(),key,value));
            return pRoot;
        }
        else{
-           pRoot->setRight(insertAux(pRoot->getRight(),element));
+           pRoot->setRight(insertAux(pRoot->getRight(),key,value));
            return pRoot;
        }
    }
@@ -44,37 +45,42 @@ private:
 
 
 public:
-   E find(E element)throw(runtime_error){
+   KVPair<K,V>find(K element)throw(runtime_error){
        return findAux(root,element);
    }
 
 
 private:
-   E findAux(BSTNode<E>*pRoot,E element)throw(runtime_error){
-       if(pRoot==NULL)throw runtime_error("Bla bla");
-       if(element==pRoot->getElement())return pRoot->getElement();
-       if(element<pRoot->getElement())return findAux(pRoot->getLeft(),element);
+    KVPair<K,V> findAux(BSTNode<K,V>*pRoot,K element)throw(runtime_error){
+       if(pRoot==NULL)throw runtime_error("Tree is Empty");
+
+       if(element==pRoot->getElement().getKey()){
+           return pRoot->getElement();
+       }
+       if(element<pRoot->getElement().getKey()){
+           return findAux(pRoot->getLeft(),element);
+       }
        else{
            return findAux(pRoot->getRight(),element);
        }
    }
 
 public:
-   E remove(E element)throw(runtime_error){
-       E result = find(element);
-       root =removeAux(root,element);
+   KVPair<K,V> remove(K key)throw(runtime_error){
+       KVPair<K,V> result = find(key);
+       root =removeAux(root,key);
        return result;
    }
 
 private:
-   BSTNode<E> *removeAux(BSTNode<E> *pRoot, E element)throw(runtime_error){
+   BSTNode<K,V> *removeAux(BSTNode<K,V> *pRoot, K key)throw(runtime_error){
        if(pRoot==NULL)throw runtime_error("Element not found");
-       if(element<pRoot->getElement()){
-           pRoot->setLeft(removeAux(pRoot->getLeft(),element));
+       if(key<pRoot->getElement().getKey()){
+           pRoot->setLeft(removeAux(pRoot->getLeft(),key));
            return pRoot;
        }
-       if(element>pRoot->getElement()){
-           pRoot->setRight(removeAux(pRoot->getRight(),element));
+       if(key>pRoot->getElement().getKey()){
+           pRoot->setRight(removeAux(pRoot->getRight(),key));
            return pRoot;
        }
        else{
@@ -83,16 +89,39 @@ private:
                return NULL;
            }
            if(pRoot->childrenCount()==1){
-               BSTNode<E> *temp = pRoot->getUniqueChild();
+               BSTNode<K,V> *temp = pRoot->getUniqueChild();
                delete pRoot;
                return temp;
            }
            else {
-               BSTNode<E> *succesor= pRoot->getSuccessor();
+               BSTNode<K,V> *succesor=pRoot->getSuccesor();
                swap(pRoot,succesor);
-               pRoot->setRight(removeAux(pRoot->getRight(),element));
+               pRoot->setRight(removeAux(pRoot->getRight(),key));
                return pRoot;
            }
+       }
+   }
+
+
+public:
+   bool contains(K key){
+       return containsAux(root,key);
+
+   }
+
+private:
+   bool containsAux(BSTNode<K,V>* pRoot,K key){
+       if(pRoot==NULL){
+           return false;
+       }
+       if(key==pRoot->getElement().getKey()){
+           return true;
+       }
+       if(key<pRoot->getElement().getKey()){
+           return containsAux(pRoot->getLeft(),key);
+       }
+       else{
+           return containsAux(pRoot->getRight(),key);
        }
    }
 
@@ -102,7 +131,7 @@ public:
        root=NULL;
    }
 private:
-   void clearAux(BSTNode<E> *pRoot){
+   void clearAux(BSTNode<K,V> *pRoot){
        if(pRoot==NULL)return;
        clearAux(pRoot->getLeft());
        clearAux(pRoot->getRight());
@@ -110,36 +139,67 @@ private:
    }
 
 public:
-   List<E> *getElements(){
-       List<E> *elements= new DlinkedList<E>();
+   List<KVPair<K,V>> *getElements(){
+       List< KVPair<K,V> > *elements= new DlinkedList<KVPair<K,V> >();
        getElementsAux(root,elements);
        return elements;
    }
 
-   void getElementsAux(BSTNode<E> pRoot,List<E> elements){
-       if(root==NULL){
-           return;
+private:
+
+   void getElementsAux(BSTNode<K,V> *pRoot,List<KVPair<K,V> > *elements){
+          if(pRoot==NULL){
+              return ;
+          }
+          else{
+              getElementsAux(pRoot->getLeft(),elements);
+              //cout<<pRoot->getElement().getKey()<<endl;
+              elements->append(pRoot->getElement());
+              getElementsAux(pRoot->getRight(),elements);
+
+          }
+}
+
+
+
+
+
+
+public:
+
+//   int getSize(){
+//    int *size=new int;
+//    getSizeAux(root,size);
+
+//    return ;
+
+//   }
+
+//   void getSizeAux(BSTNode<K,V> *pRoot,int pSize){
+//       if(pRoot== NULL){
+//           return;
+//       }
+//       else{
+//           getSizeAux(pRoot->getLeft(),pSize);
+//           cout<<"k";
+//           pSize++;
+//           getSizeAux(pRoot->getRight(),pSize);
+
+//       }
+//   }
+
+
+   int getSize(){//Lo cambie a recursividad de pila por que por cola no me funka
+       return getSizeAux(root);
+   }
+
+   int getSizeAux(BSTNode<K,V>*root){
+       if(root!=NULL){
+           return 1+getSizeAux(root->getLeft()) + getSizeAux(root->getRight());
        }
-       getElementsAux(pRoot.left,elements);
-       elements.append(pRoot.getElement());
-       getElementsAux(pRoot.right,elements);
-
-   }
-
-   int getSize(){
-    int size;
-    return getSizeAux(root,size);
-
-   }
-
-   int getSizeAux(BSTNode<E> *pRoot,int pSize){
-       if(root== NULL){
+       else{
            return 0;
        }
-       getSizeAux(pRoot->getLeft(),pSize);
-       pSize++;
-       getSizeAux(pRoot->getRight(),pSize);
-
    }
 
    void print(){
@@ -147,12 +207,15 @@ public:
    }
 
 private:
-   void printAux(BSTNode<E>* pRoot){
-       if(pRoot==NULL){return;}
-       else{
+   void printAux(BSTNode<K,V>* pRoot){
+       if(pRoot==NULL){
+           return ;
+       }
+       else{          
            printAux(pRoot->getLeft());
-           cout<<pRoot->getElement()<<"-";
+           cout<<pRoot->getElement().getKey()<<"-"<<pRoot->getElement().getValue()<<endl;
            printAux(pRoot->getRight());
+
        }
    }
 

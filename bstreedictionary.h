@@ -2,15 +2,20 @@
 #define BSTREEDICTIONARY_H
 #include "dictionary.h"
 #include "bstnode.h"
-#include "kvpair.h"
+#include "bstree.h"
 
 
 
-template <typename K, typename V>
+template <typename K,typename V>
+
 class BSTreeDictionary:public Dictionary<K,V>{
-    BSTNode<KVPair<K,V>> *root;
+
+public:
+    BSTree<K,V>  *pairs;
+
     BSTreeDictionary(){
-        root=NULL;
+        pairs= new BSTree<K,V>();
+
     }
 
     ~BSTreeDictionary(){
@@ -19,34 +24,28 @@ class BSTreeDictionary:public Dictionary<K,V>{
     }
 
     void insert(K key,V value){
-        root=insertAux(key,value,root);
+        //KVPair<K,V> par= new KVPair<K,V>(key,value);
+        pairs->insert(key,value);
     }
 
-    void insertAux(K pKey, V pValue,BSTNode<KVPair<K,V>>* pRoot){
-        if(pRoot==NULL){
+private:
 
-            return BSTNode<KVPair<K,V>>(new KVPair<K,V>(pKey,pValue));
-        }
 
-        if(pKey<pRoot->getElement()->getKey){
-            pRoot->setLeft(insertAux(pRoot->getLeft(),));
-            return pRoot;
-        }
-        else{
-            pRoot->setRight(insertAux(pRoot->getRight(),element));
-            return pRoot;
-        }
-
-    }
-    void remove(K key){
+public:
+    V remove(K key){
+        pairs->remove(key);
 
     }
 
-    void getValue(){
+    V getValue(K key){
+        KVPair<K,V> p=pairs->find(key);
+        return p.getValue();
+
 
     }
 
-    void setValue(){
+    void setValue(K key, V value){
+
 
     }
 
@@ -55,17 +54,42 @@ class BSTreeDictionary:public Dictionary<K,V>{
     }
     bool contains(K key){
 
+        return pairs->contains(key);
     }
 
     List<K>* getKeys(){
+        List<K>*keys= new DlinkedList<K>();
+        //Aqui va bien
+        List<KVPair<K,V>> *list=new DlinkedList<KVPair<K,V>>();
+        list=pairs->getElements();
+        for(list->goToStart();!list->atEnd();list->next()){
+            //cout<<list->getElement().getKey()<<endl;
+            keys->append(list->getElement().getKey());
+        }
+        return keys;
+    }
+
+
+
+    List<V>* getValues(){
+        List<V> *values= new DlinkedList<V>();
+        List<KVPair<K,V>> *list=pairs->getElements();
+        for(list->goToStart();!list->atEnd();list->next()){
+            values->append(list->getElement().getValue());
+        }
+        return values;
 
     }
 
-    List<K>* getValues(){
 
-    }
     int getSize(){
+        return pairs->getSize();
+    }
 
+
+    void print(){
+        cout<<"Elementos del Diccionario: "<<endl;
+        pairs->print();
     }
 };
 
